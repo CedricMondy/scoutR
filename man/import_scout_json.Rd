@@ -7,8 +7,17 @@
 import_scout_json(jsonfile)
 }
 \arguments{
-\item{jsonfile}{}
+\item{jsonfile}{the path to the json file to be imported}
+}
+\value{
+a {sf} object using WGS 84 (CRS 4326) geographic coordinate system
 }
 \description{
-Import json files from Scout exports
+Import json files containing geographic data and convert them to {sf} objects
+}
+\details{
+Geographic data (waypoints and records) are saved in json files in SCOUT
+exports. This function use the {jsonlite} package to import them as data
+frames and then convert them in simple features objects using the {sf}
+package.
 }

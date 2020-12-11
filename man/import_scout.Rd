@@ -7,14 +7,27 @@
 import_scout(zipfile)
 }
 \arguments{
-\item{zipfile}{}
+\item{zipfile}{the path to the SCOUT's zip export}
 }
 \value{
-
+a named list, ofof class ScoutList, with:
+\itemize{
+\item info: a data.frame. The visit metadata, name of the operator, name of the visit, start ad end of the visit
+\item waypoints: a {sf} object. The individual points periodically recorded along the visit
+\item traces: a {sf} object. Waypoints converted to lines
+\item records: a {sf} object. Records with the corresponding text comment and, if relevant, the name of the corresponding picture and audio files.
+}
 }
 \description{
-Import Scout exports
+Import Scout's export as a zip file and convert it into R objects
 }
-\examples{
-
+\details{
+The SCOUT's exports are zip archives containing json files for geographic
+data (waypoints and records), metadata, photos... The \code{import_scout} function
+imports the metadata as a data frame,  imports the json files and convert
+them to {sf} objects.
+Waypoints are also transformed in linear traces and returned.
+}
+\seealso{
+\code{\link[=import_scout_json]{import_scout_json()}}, used internally in \code{import_scout}, to import the json files from the zip export
 }

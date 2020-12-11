@@ -1,6 +1,15 @@
 #' Import json files from Scout exports
 #'
-#' @param jsonfile
+#' Import json files containing geographic data and convert them to {sf} objects
+#'
+#' Geographic data (waypoints and records) are saved in json files in SCOUT
+#' exports. This function use the {jsonlite} package to import them as data
+#' frames and then convert them in simple features objects using the {sf}
+#' package.
+#'
+#' @param jsonfile the path to the json file to be imported
+#'
+#' @return a {sf} object using WGS 84 (CRS 4326) geographic coordinate system
 #'
 #' @export
 #'
@@ -53,14 +62,25 @@ import_scout_metadata <- function(textfile) {
 
 #' Import Scout exports
 #'
+#' Import Scout's export as a zip file and convert it into R objects
 #'
+#' The SCOUT's exports are zip archives containing json files for geographic
+#' data (waypoints and records), metadata, photos... The `import_scout` function
+#' imports the metadata as a data frame,  imports the json files and convert
+#' them to {sf} objects.
+#' Waypoints are also transformed in linear traces and returned.
 #'
-#' @param zipfile
+#' @param zipfile the path to the SCOUT's zip export
 #'
-#' @return
+#' @return a named list, ofof class ScoutList, with:
+#'  * info: a data.frame. The visit metadata, name of the operator, name of the visit, start ad end of the visit
+#'  * waypoints: a {sf} object. The individual points periodically recorded along the visit
+#'  * traces: a {sf} object. Waypoints converted to lines
+#'  * records: a {sf} object. Records with the corresponding text comment and, if relevant, the name of the corresponding picture and audio files.
+#'
 #' @export
 #'
-#' @examples
+#' @seealso [import_scout_json()], used internally in `import_scout`, to import the json files from the zip export
 #'
 #' @importFrom dplyr group_by summarise
 #' @importFrom sf st_cast

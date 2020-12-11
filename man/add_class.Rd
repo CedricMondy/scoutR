@@ -4,14 +4,20 @@
 \alias{add_class}
 \title{Add a class to a R object}
 \usage{
-add_class(x, class_name)
+add_class(x, class_name, replace = FALSE)
 }
 \arguments{
-\item{class_name}{}
+\item{x}{a R object}
+
+\item{class_name}{the class name to be assigned to x}
+
+\item{replace}{logical. Whether the class_name should be added to (FALSE,
+default) or should replace (TRUE) existing classes.}
 }
 \value{
-
+the R object \code{x} with updated class assignment
 }
 \description{
-Add a class to a R object
+Simple wrapper around the {base} \code{class} function to allow its use in
+{magrittr} pipe workflow
 }
