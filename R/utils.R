@@ -6,8 +6,12 @@
 #' @return
 #' @export
 #'
-#' @examples
-add_class <- function(x, class_name) {
-    class(x) <- class_name
+add_class <- function(x, class_name, replace = FALSE) {
+    if (replace) {
+        class(x) <- class_name
+    } else {
+        class(x) <- c(class(x), class_name)
+    }
+
     x
 }
