@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_scout.R
 \name{import_scout}
 \alias{import_scout}
-\title{Import Scout visit exports}
+\title{Import Scout exports}
 \usage{
 import_scout(zipfile)
 }
@@ -13,5 +13,8 @@ import_scout(zipfile)
 
 }
 \description{
-Import Scout visit exports
+Import Scout exports
+}
+\examples{
+
 }

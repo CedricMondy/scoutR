@@ -1,4 +1,9 @@
-
+#' Import json files from Scout exports
+#'
+#' @param jsonfile
+#'
+#' @export
+#'
 #' @importFrom jsonlite read_json
 #' @importFrom janitor clean_names
 #' @importFrom dplyr %>% mutate
@@ -46,7 +51,7 @@ import_scout_metadata <- function(textfile) {
 
 }
 
-#' Import Scout visit exports
+#' Import Scout exports
 #'
 #'
 #'
@@ -56,6 +61,9 @@ import_scout_metadata <- function(textfile) {
 #' @export
 #'
 #' @examples
+#'
+#' @importFrom dplyr group_by summarise
+#' @importFrom sf st_cast
 import_scout <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
@@ -72,7 +80,7 @@ import_scout <- function(zipfile) {
     )
 
     # import trace
-    trace <- import_scout_json(
+    waypoints <- import_scout_json(
         jsonfile = file.path(TempDir, "Itineraires.json")
     )
 
@@ -81,9 +89,16 @@ import_scout <- function(zipfile) {
         jsonfile = file.path(TempDir, "Releves.json")
     )
 
+    # convert waypoints to trace
+    traces <- waypoints %>%
+        group_by(identifiant_itineraire) %>%
+        summarise(.groups = "drop") %>%
+        st_cast(to = "MULTILINESTRING")
+
     visit <- list(
         info = info,
-        trace = trace,
+        waypoints = waypoints,
+        traces = traces,
         records = records
     ) %>%
         add_class(
