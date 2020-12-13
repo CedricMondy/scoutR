@@ -82,8 +82,8 @@ import_scout_metadata <- function(textfile) {
 #'
 #' @seealso [import_scout_json()], used internally in `import_scout`, to import the json files from the zip export
 #'
-#' @importFrom dplyr group_by summarise
-#' @importFrom sf st_cast
+#' @importFrom dplyr group_by
+#' @importFrom sf st_cast st_combine
 import_scout <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
@@ -112,7 +112,7 @@ import_scout <- function(zipfile) {
     # convert waypoints to trace
     traces <- waypoints %>%
         group_by(identifiant_itineraire) %>%
-        summarise(.groups = "drop") %>%
+        st_combine() %>%
         st_cast(to = "MULTILINESTRING")
 
     visit <- list(
