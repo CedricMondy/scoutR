@@ -18,7 +18,7 @@
 #' @importFrom dplyr %>% mutate
 #' @importFrom lubridate as_datetime
 #' @importFrom sf st_as_sf
-import_scout_json <- function(jsonfile) {
+scout_import_json <- function(jsonfile) {
     read_json(
         path           = jsonfile,
         simplifyVector = TRUE
@@ -38,7 +38,7 @@ import_scout_json <- function(jsonfile) {
 #' @importFrom purrr set_names
 #' @importFrom lubridate as_datetime
 #'
-import_scout_metadata <- function(textfile) {
+scout_import_metadata <- function(textfile) {
     suppressWarnings(
         read.delim(
             file         = textfile,
@@ -80,11 +80,11 @@ import_scout_metadata <- function(textfile) {
 #'
 #' @export
 #'
-#' @seealso [import_scout_json()], used internally in `import_scout`, to import the json files from the zip export
+#' @seealso [scout_import_json()], used internally in `scout_import_zip`, to import the json files from the zip export
 #'
 #' @importFrom dplyr group_by
 #' @importFrom sf st_cast st_combine
-import_scout <- function(zipfile) {
+scout_import_zip <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
 
@@ -95,17 +95,17 @@ import_scout <- function(zipfile) {
     )
 
     # import visit metadata
-    info <- import_scout_metadata(
+    info <- scout_import_metadata(
         textfile = file.path(TempDir, "Recap.txt")
     )
 
     # import trace
-    waypoints <- import_scout_json(
+    waypoints <- scout_import_json(
         jsonfile = file.path(TempDir, "Itineraires.json")
     )
 
     # import records
-    records <- import_scout_json(
+    records <- scout_import_json(
         jsonfile = file.path(TempDir, "Releves.json")
     )
 
