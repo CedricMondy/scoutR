@@ -69,6 +69,7 @@ scout_import_metadata <- function(textfile) {
 #' imports the metadata as a data frame,  imports the json files and convert
 #' them to {sf} objects.
 #' Waypoints are also transformed in linear traces and returned.
+#' If any pictures are present in the export, they are moved to a 'Pictures' folder in the working directory.
 #'
 #' @param zipfile the path to the SCOUT's zip export
 #'
@@ -82,15 +83,16 @@ scout_import_metadata <- function(textfile) {
 #'
 #' @seealso [scout_import_json()], used internally in `scout_import_zip`, to import the json files from the zip export
 #'
-#' @importFrom dplyr group_by
+#' @importFrom dplyr group_by filter pull
 #' @importFrom sf st_cast st_combine
+#' @importFrom purrr walk
 scout_import_zip <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
 
     unzip(
         zipfile = zipfile,
-        files = c("Itineraires.json", "Releves.json", "Recap.txt"),
+        # files = c("Itineraires.json", "Releves.json", "Recap.txt"),
         exdir = TempDir
     )
 
@@ -108,6 +110,20 @@ scout_import_zip <- function(zipfile) {
     records <- scout_import_json(
         jsonfile = file.path(TempDir, "Releves.json")
     )
+
+    # if any pictures, move them to the working directory
+    if (nrow(filter(records, !is.na(nom_fichier_photo))) > 0) {
+        if (!dir.exists("Pictures"))
+            dir.create("Pictures")
+
+        records %>%
+            filter(!is.na(nom_fichier_photo)) %>%
+            pull(nom_fichier_photo) %>%
+            walk(function(path) {
+                file.copy(from = file.path(TempDir, "Photos", path),
+                          to = file.path("Pictures", path))
+            })
+    }
 
     # convert waypoints to trace
     traces <- waypoints %>%
