@@ -6,6 +6,8 @@
 #'If both waypoints and traces are present in the `ScoutObject`, only traces are
 #'visible by default (but waypoints can be made visible).
 #'
+#' If any pictures are associated with records, the marker is replaced by a camera and the picture can be view in a popup by clicking on the marker.
+#'
 #'Orthophotos, IGN maps and OpenStreetMap maps are available as base maps.
 #'
 #'Export of the leaflet map as a picture is possible thanks to the
@@ -16,12 +18,15 @@
 #'@return a {leaflet} map
 #'@export
 #'
+#'@references Louveaux M. (2020, Oct. 24). "Visualizing GPX hiking data and photos with leaflet". Retrieved from https://marionlouveaux.fr/blog/gpx-trancks-and-leaflet-interactive-map/.
+#'
 #'@importFrom purrr map_lgl
 #'@importFrom leaflet leaflet addProviderTiles addPolylines addCircleMarkers
 #'  addMarkers addLayersControl hideGroup iconList makeIcon
 #'@importFrom leaflet.extras2 addEasyprint easyprintOptions
+#'@importFrom leafpop addPopupImages
 #'@importFrom glue glue
-#'@importFrom dplyr filter if_else
+#'@importFrom dplyr filter if_else mutate
 #'@importFrom stringr str_wrap
 scout_view <- function(ScoutObject) {
 
@@ -51,31 +56,43 @@ scout_view <- function(ScoutObject) {
                          group = "waypoints", radius = 2, stroke = FALSE, fillOpacity = 1)
 
     if ("records" %in% ScoutLayers) {
-        CameraIcon <- system.file("www", "Camera-Moto-icon.png",
-                                  package = "scoutR") %>%
-            makeIcon(iconWidth = 30) %>%
-            iconList()
 
-        ScoutRecordsWithPhotos <- ScoutObject$records %>%
+        ScoutRecordsWithPictures <- ScoutObject$records %>%
             filter(!is.na(nom_fichier_photo))
 
-        ScoutRecordsWithoutPhotos <- ScoutObject$records %>%
+        ScoutRecordsWithoutPictures <- ScoutObject$records %>%
             filter(is.na(nom_fichier_photo))
 
-        if (nrow(ScoutRecordsWithoutPhotos) > 0)
+        if (nrow(ScoutRecordsWithoutPictures) > 0)
             ScoutMap <- ScoutMap %>%
-            addMarkers(data = ScoutRecordsWithoutPhotos,
+            addMarkers(data = ScoutRecordsWithoutPictures,
                        group = "relevés",
                        label = ~glue("relevé n°{numero_releve}{if_else(is.na(commentaire_texte), '', paste0(': ', str_wrap(commentaire_texte, 40)))}"))
 
-        if (nrow(ScoutRecordsWithPhotos) > 0)
-            ScoutMap <- ScoutMap %>%
-            addMarkers(data = ScoutRecordsWithPhotos,
-                       group = "relevés",
-                       label = ~glue("relevé n°{numero_releve}{if_else(is.na(commentaire_texte), '', paste0(': ', str_wrap(commentaire_texte, 40)))}"),
-                       icon = ~CameraIcon)
-    }
+        if (nrow(ScoutRecordsWithPictures) > 0) {
+            CameraIcon <- system.file("www", "Camera-Moto-icon.png",
+                                      package = "scoutR") %>%
+                makeIcon(iconWidth = 30) %>%
+                iconList()
 
+            ScoutMap <- ScoutMap %>%
+                addMarkers(data = ScoutRecordsWithPictures,
+                           group = "relevés",
+                           label = ~glue("relevé n°{numero_releve}{if_else(is.na(commentaire_texte), '', paste0(': ', str_wrap(commentaire_texte, 40)))}"),
+                           icon = ~CameraIcon)
+
+            if (dir.exists("Pictures")) {
+                ScoutRecordsWithPictures <- ScoutRecordsWithPictures %>%
+                    mutate(picture_path = file.path("Pictures", nom_fichier_photo))
+
+                ScoutMap <- ScoutMap %>%
+                    addPopupImages(ScoutRecordsWithPictures$picture_path,
+                                   width = 300,
+                                   group = "relevés")
+            }
+
+        }
+    }
 
     groups <- c(traces = "itinéraire",
                 waypoints = "waypoints",
