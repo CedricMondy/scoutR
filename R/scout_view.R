@@ -40,11 +40,31 @@ scout_view <- function(ScoutObject) {
         addCircleMarkers(data = ScoutObject$waypoints,
                          group = "waypoints", radius = 2, stroke = FALSE, fillOpacity = 1)
 
-    if ("records" %in% ScoutLayers)
+    if ("records" %in% ScoutLayers) {
+        CameraIcon <- system.file("www", "Camera-Moto-icon.png",
+                                  package = "scoutR") %>%
+            makeIcon(iconWidth = 30) %>%
+            iconList()
+
+        ScoutRecordsWithPhotos <- ScoutObject$records %>%
+            filter(!is.na(nom_fichier_photo))
+
+        ScoutRecordsWithoutPhotos <- ScoutObject$records %>%
+            filter(is.na(nom_fichier_photo))
+
+        if (nrow(ScoutRecordsWithoutPhotos) > 0)
             ScoutMap <- ScoutMap %>%
-            addMarkers(data = ScoutObject$records,
+            addMarkers(data = ScoutRecordsWithoutPhotos,
                        group = "relevés",
                        label = ~glue("relevé n°{numero_releve}{if_else(is.na(commentaire_texte), '', paste0(': ', str_wrap(commentaire_texte, 40)))}"))
+
+        if (nrow(ScoutRecordsWithPhotos) > 0)
+            ScoutMap <- ScoutMap %>%
+            addMarkers(data = ScoutRecordsWithPhotos,
+                       group = "relevés",
+                       label = ~glue("relevé n°{numero_releve}{if_else(is.na(commentaire_texte), '', paste0(': ', str_wrap(commentaire_texte, 40)))}"),
+                       icon = ~CameraIcon)
+    }
 
 
     groups <- c(traces = "itinéraire",
