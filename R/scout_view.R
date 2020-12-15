@@ -87,7 +87,7 @@ scout_view <- function(ScoutObject) {
 
                 ScoutMap <- ScoutMap %>%
                     addPopupImages(ScoutRecordsWithPictures$picture_path,
-                                   width = 300,
+                                   width = 200,
                                    group = "relevés")
             }
 
