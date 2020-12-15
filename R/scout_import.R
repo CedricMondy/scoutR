@@ -11,11 +11,10 @@
 #'
 #' @return a {sf} object using WGS 84 (CRS 4326) geographic coordinate system
 #'
-#' @export
 #'
 #' @importFrom jsonlite read_json
 #' @importFrom janitor clean_names
-#' @importFrom dplyr %>% mutate
+#' @importFrom dplyr mutate
 #' @importFrom lubridate as_datetime
 #' @importFrom sf st_as_sf
 scout_import_json <- function(jsonfile) {
@@ -34,7 +33,7 @@ scout_import_json <- function(jsonfile) {
         )
 }
 
-#' @importFrom dplyr %>% mutate across
+#' @importFrom dplyr mutate across
 #' @importFrom purrr set_names
 #' @importFrom lubridate as_datetime
 #'
@@ -67,7 +66,7 @@ scout_import_metadata <- function(textfile) {
 #' The SCOUT's exports are zip archives containing json files for geographic
 #' data (waypoints and records), metadata, photos... The `import_scout` function
 #' imports the metadata as a data frame,  imports the json files and convert
-#' them to {sf} objects.
+#' them to {sf} objects using the WGS84 (CRS 4326) geographic coordinate system.
 #' Waypoints are also transformed in linear traces and returned.
 #' If any pictures are present in the export, they are moved to a 'Pictures' folder in the working directory.
 #'
@@ -81,12 +80,11 @@ scout_import_metadata <- function(textfile) {
 #'
 #' @export
 #'
-#' @seealso [scout_import_json()], used internally in `scout_import_zip`, to import the json files from the zip export
 #'
 #' @importFrom dplyr group_by filter pull
 #' @importFrom sf st_cast st_combine
 #' @importFrom purrr walk
-scout_import_zip <- function(zipfile) {
+scout_import <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
 
