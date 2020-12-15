@@ -20,3 +20,16 @@ add_class <- function(x, class_name, replace = FALSE) {
 
     x
 }
+
+#' Test if object is of class sf or sfc
+#'
+#' @param x a R object
+#'
+#' @return logical, whether or not the object if of class sf or sfc
+#'
+#' @export
+#'
+#' @importFrom stringr str_detect
+is_sf.c <- function(x) {
+    any(str_detect(string = class(x), pattern = "(^sf$)|(^sfc$)"))
+}

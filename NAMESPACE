@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_class)
+export(is_sf.c)
 export(scout_import_json)
 export(scout_import_zip)
 importFrom(dplyr,"%>%")
@@ -16,3 +17,4 @@ importFrom(purrr,set_names)
 importFrom(sf,st_as_sf)
 importFrom(sf,st_cast)
 importFrom(sf,st_combine)
+importFrom(stringr,str_detect)
