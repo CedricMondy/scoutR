@@ -7,7 +7,7 @@
 scout_view(ScoutObject)
 }
 \arguments{
-\item{interactive}{}
+\item{ScoutObject}{}
 }
 \value{
 

@@ -1,7 +1,6 @@
 #' Title
 #'
 #' @param ScoutObject
-#' @param interactive
 #'
 #' @return
 #' @export
@@ -10,9 +9,10 @@
 #'
 #' @importFrom purrr map_lgl
 #' @importFrom leaflet leaflet addProviderTiles addPolylines addCircleMarkers addMarkers addLayersControl hideGroup iconList makeIcon
-#' @importFrom leaflet.extras2 addEasyPrint easyprintOptions
+#' @importFrom leaflet.extras2 addEasyprint easyprintOptions
 #' @importFrom glue glue
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter if_else
+#' @importFrom stringr str_wrap
 scout_view <- function(ScoutObject) {
 
     ScoutLayers <- names(ScoutObject)[map_lgl(ScoutObject, is_sf.c)]
