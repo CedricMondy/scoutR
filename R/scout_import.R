@@ -81,9 +81,9 @@ scout_import_metadata <- function(textfile) {
 #' @export
 #'
 #'
-#' @importFrom dplyr group_by filter pull
-#' @importFrom sf st_cast st_combine
-#' @importFrom purrr walk
+#' @importFrom dplyr group_by group_split filter pull
+#' @importFrom sf st_cast st_combine st_as_sf
+#' @importFrom purrr walk map_df
 scout_import <- function(zipfile) {
     # uncompress the zip archive
     TempDir <- tempfile()
@@ -126,7 +126,11 @@ scout_import <- function(zipfile) {
     # convert waypoints to trace
     traces <- waypoints %>%
         group_by(identifiant_itineraire) %>%
-        st_combine() %>%
+        group_split() %>%
+        map_df(.f = function(sfdata) {
+            st_combine(sfdata) %>%
+                st_as_sf()
+        }) %>%
         st_cast(to = "MULTILINESTRING")
 
     visit <- list(
